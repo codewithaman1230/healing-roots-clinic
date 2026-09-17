@@ -2,45 +2,44 @@ const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
 const cors = require('cors');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
-// Static files and uploads folder
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Fixed timestamp key safety for Multer
-const safeStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, 'uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '_'));
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'healing-roots-videos',
+    resource_type: 'auto',
+    allowed_formats: ['mp4', 'mov', 'avi', 'mkv', 'webm']
   }
 });
-const upload = multer({ storage: safeStorage });
+const upload = multer({ storage: storage });
 
-// Mongoose Schema & Model (Safe model init)
 const videoSchema = new mongoose.Schema({
   title: String,
   description: String,
-  category: { type: String, default: 'patient-review' }, 
+  category: { type: String, default: 'patient-review' },
   videoUrl: String,
+  publicId: String,
   createdAt: { type: Date, default: Date.now }
 });
 
 const Video = mongoose.models.Video || mongoose.model('Video', videoSchema);
 
-// 1. Get All Videos
 app.get('/api/videos', async (req, res) => {
   try {
     const videos = await Video.find().sort({ createdAt: -1 });
@@ -50,7 +49,6 @@ app.get('/api/videos', async (req, res) => {
   }
 });
 
-// 2. Upload Video
 app.post('/api/upload', upload.single('video'), async (req, res) => {
   try {
     if (!req.file) {
@@ -61,7 +59,8 @@ app.post('/api/upload', upload.single('video'), async (req, res) => {
       title: req.body.title || 'Untitled',
       description: req.body.description || '',
       category: req.body.category || 'patient-review',
-      videoUrl: `/uploads/${req.file.filename}`
+      videoUrl: req.file.path,
+      publicId: req.file.filename
     });
 
     await newVideo.save();
@@ -71,7 +70,6 @@ app.post('/api/upload', upload.single('video'), async (req, res) => {
   }
 });
 
-// 3. Delete Video API
 app.delete('/api/videos/:id', async (req, res) => {
   try {
     const video = await Video.findById(req.params.id);
@@ -79,26 +77,21 @@ app.delete('/api/videos/:id', async (req, res) => {
       return res.status(404).json({ error: 'Video not found' });
     }
 
-    if (video.videoUrl) {
-      const filePath = path.join(__dirname, video.videoUrl);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
+    if (video.publicId) {
+      await cloudinary.uploader.destroy(video.publicId, { resource_type: 'video' });
     }
 
     await Video.findByIdAndDelete(req.params.id);
     res.json({ message: 'Video deleted successfully!' });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to delete video' });
+    res.status(500).json({ error: 'Failed to delete video', details: err.message });
   }
 });
 
-// Fallback route to serve index.html for SPA/multi-page static routing
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Database Connection & Server Start (Cloud MongoDB URI support + Render '0.0.0.0' fix)
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://healingroots:RwprfBx11vCPm0E9@cluster0.xc0oab3.mongodb.net/videoApp?appName=Cluster0';
 

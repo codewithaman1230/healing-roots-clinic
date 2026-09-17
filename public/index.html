@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healing Roots Clinic - Dr. Radhika Trivedi</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Linked CSS File -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Doctor Secret Admin Login Bar -->
+    <div class="admin-trigger-bar" id="adminTriggerBar">
+        <span id="adminStatusText"><i class="fa-solid fa-lock"></i> Doctor Portal Locked</span>
+        <button class="admin-trigger-btn" id="adminAuthBtn" onclick="toggleDoctorAuth()">Doctor Login</button>
+    </div>
+
+    <!-- Top Bar with Automatic Live Doctor Status -->
+    <div class="top-bar">
+        <div class="top-bar-container">
+            <div>
+                <span><i class="fa-solid fa-phone"></i>+91 8982160554</span>
+                <span style="margin-left: 20px;"><i class="fa-solid fa-envelope"></i> healingroots999@gmail.com</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span><i class="fa-solid fa-clock"></i> Mon-Sat: 10 AM - 10 PM</span>
+                <div class="live-status-badge" id="liveStatusBadge">
+                    <span class="pulse-dot" id="pulseDot"></span> <span id="statusText">Checking...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="nav-container">
+            <a href="#home" class="brand-logo" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+                <img src="logo2.png" alt="Healing Roots Logo" style="width: 48px; height: 48px; object-fit: contain; background-color: #ffffff; border-radius: 6px; padding: 2px;">
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-size: 1.1rem; font-weight: 800; color: #DB2777; line-height: 1.1;">HEALING ROOTS</span>
+                    <span style="font-size: 0.65rem; color: #F59E0B; font-weight: 700; letter-spacing: 0.5px;">Dr. Radhika Trivedi</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home" class="active">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#doctor">Doctor</a></li>
+                <li><a href="#reviews">Reviews</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div>
+                <a href="#appointment" class="btn-primary">Book Appointment</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <span class="badge">Healing with Trust and Care</span>
+                <h1>Rooted in Care, Focused on Your <span>Total Health</span></h1>
+                <p>Led by Dr. Radhika Trivedi, we bring together advanced clinical science and natural, patient-first care pathways to ensure deep, long-lasting wellness for your entire family.</p>
+                <div class="hero-buttons">
+                    <a href="#appointment" class="btn-primary">Book Appointment</a>
+                    <a href="#services" class="btn-outline">Our Services</a>
+                </div>
+            </div>
+            
+            <div class="hero-showcase" style="text-align: center; padding: 20px;">
+                <img src="logo2.png" alt="Healing Roots Logo Showcase" style="width: 200px; height: 200px; object-fit: contain; background-color: #ffffff; border-radius: 12px; padding: 6px; margin-bottom: 12px;">
+                <div class="showcase-brand-title">HEALING ROOTS</div>
+                <div class="showcase-doc">Dr. Radhika Trivedi</div>
+                <div class="showcase-tagline">Healing with Trust and Care</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-user-doctor"></i></div>
+                <div>
+                    <h3>Expert Physicians</h3>
+                    <p>Compassionate, experienced practitioners dedicated to listening to your health concerns deeply.</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-hand-holding-medical"></i></div>
+                <div>
+                    <h3>Holistic Recovery</h3>
+                    <p>Treating the root cause of illnesses rather than just masking the symptoms temporarily.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="section-title">
+            <h2>Our Healthcare Services</h2>
+            <p>Explore our specialized medical treatments and natural care packages tailored for your wellbeing.</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <i class="fa-solid fa-venus-mars"></i>
+                <h3>Infertility and reproductive health</h3>
+                <p>Supportive care for male and female infertility concerns.</p>
+            </div>
+            <div class="service-card">
+                <i class="fa-solid fa-venus"></i>
+                <h3>Women's health and hermonal concerns</h3>
+                <p>PCOD / PCOS, menstrual irregularities, amenorrhoea and related concerns.</p>
+            </div>
+            <div class="service-card">
+                <i class="fa-solid fa-hand-dots"></i>
+                <h3>Skin Disorders</h3>
+                <p>Acne, psoriasis, urticaria, fungal infection, warts or other chronic skin complaints.</p>
+            </div>
+             <div class="service-card">
+                <i class="fa-solid fa-kit-medical"></i>
+                <h3>Others diseases</h3>
+                <p>Hair and scalp concerns, bone and joint disorders, renal and urinary concerns, piles, fissure & fistula, thyroid & metabolic concerns, child health, chronic & lifestyle disorders.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Doctor Section -->
+    <section id="doctor" class="doctor-section">
+        <div class="doctor-container">
+            <div class="doctor-image">
+                <img src="doctor.jpg" alt="Dr. Radhika Trivedi at Healing Roots Clinic">
+            </div>
+            <div class="doctor-info">
+                <h2>Meet Our Lead Physician</h2>
+                <h4>Dr. Radhika Trivedi, BHMS & General Practitioner</h4>
+                <p>With years of dedication to holistic and mainstream medical frameworks, Dr. Radhika focuses on uncovering the root origins of health challenges to deliver stable, sustainable healing.</p>
+                <a href="#appointment" class="btn-primary" style="display: inline-block; margin-top: 10px;">Consult with Dr. Radhika</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Qualifications Section -->
+    <section id="about" class="qualifications-section">
+        <div class="qualifications-container">
+            <div class="section-title" style="margin-bottom: 40px;">
+                <h2>Qualifications & Accolades</h2>
+                <p>A consistent track record of rigorous academic dedication and medical excellence.</p>
+            </div>
+            
+            <div class="qual-grid">
+                <div class="qual-card">
+                    <h3><i class="fa-solid fa-graduation-cap"></i> Education & Training</h3>
+                    <div class="timeline-item">
+                        <div class="timeline-year">Degree & Certification</div>
+                        <div class="timeline-title">MD, BHMS (Bachelor of Homeopathic Medicine and Surgery)</div>
+                        <div class="timeline-desc">Graduated with top academic standing, focusing heavily on constitutional treatment and integrated care.</div>
+                         <div class="timeline-title">BSC, EMT, DNHE</div>
+                        <div class="timeline-desc">Gentle care Individualised Treatment lasting Well-being .</div>
+                    </div>
+                </div>
+                <div class="qual-card">
+                    <h3><i class="fa-solid fa-award"></i> Awards & Recognition</h3>
+                    <div class="timeline-item">
+                        <div class="timeline-title">Former Homeopathic Consultant - ESIC INDORE</div>
+                        <div class="timeline-title">Former Senior Consultant - Cancer Healer Centre Indore</div>
+                        <div class="timeline-desc">Best Doctor Award 2021-22-23-24</div>
+                    </div>
+                     <div class="timeline-item">
+                        <div class="timeline-title">Rotary Club Award - 2026</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Token Status Checker Section -->
+    <section class="token-checker-section">
+        <div class="token-checker-box">
+            <h3><i class="fa-solid fa-magnifying-glass"></i> Forgot Your Token Number?</h3>
+            <p style="font-size: 0.9rem; color: #4B5563;">Enter your registered phone number to lookup your active appointment token.</p>
+            <div class="checker-input-group">
+                <input type="tel" id="searchPhone" placeholder="Enter phone number...">
+                <button onclick="checkTokenStatus()">Search</button>
+            </div>
+            <div id="checkerResult"></div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="reviews" class="testimonials">
+        <div class="section-title">
+            <h2>What Our Patients Say</h2>
+            <p>Real stories of recovery and health from families who trust Healing Roots Clinic.</p>
+        </div>
+        <div class="testimonials-grid" id="testimonialsGrid">
+            <div class="testimonial-card">
+                <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                <p>"Mujhe PCOD ki wajah se kaafi time se irregular periods ki problem thi. Allopathic medicines se sirf temporary relief milta tha.
+Mainne HEALING ROOTS – Dr. Radhika Trivedi (Homeopathy Clinic) se treatment liya, aur unke personalised homeopathic approach se mujhe bahut hi positive results mile. Unka treatment truly effective tha – bina kisi side effect ke dheere-dheere meri body respond karne lagi, aur ab periods regular ho gaye hain."</p>
+                <div class="client-name">— Deepti Sharma</div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                <p>"Meri shaadi ko 5 saal ho gye the bache nhi ho rhe the sab ilaaj karwaye mgr nhi ho rha tha conceive radhika madam ki dawai 3 months li aur conceive ho gaya tha. ab mera baby 2 saal ka hai..aaj apni behan ko lekar ayi treatment k liye.. thank you madam.. healing roots dr radhika ma'am..top clinic in Indore"</p>
+                <div class="client-name">— Kamini Yadav</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Write a Written Review Section -->
+    <section class="write-review-section">
+        <div class="review-form-box">
+            <h3 style="color: var(--primary-pink); font-size: 1.35rem; font-weight: 800;"><i class="fa-solid fa-pen-nib"></i> Share Your Written Review</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 4px;">Aapka feedback hamare liye aur doosre patients ke liye bahut kimti hai.</p>
+            
+            <form id="writtenReviewForm" class="review-form">
+                <div>
+                    <label style="font-size: 0.85rem; font-weight: 700; color: #374151; display: block; margin-bottom: 4px;">Your Full Name</label>
+                    <input type="text" id="reviewAuthorName" placeholder="e.g. Amit Verma" required>
+                </div>
+                <div>
+                    <label style="font-size: 0.85rem; font-weight: 700; color: #374151; display: block; margin-bottom: 4px;">Rating</label>
+                    <select id="reviewRating" required>
+                        <option value="5">⭐⭐⭐⭐⭐ (5/5 - Excellent)</option>
+                        <option value="4">⭐⭐⭐⭐ (4/5 - Very Good)</option>
+                        <option value="3">⭐⭐⭐ (3/5 - Good)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 0.85rem; font-weight: 700; color: #374151; display: block; margin-bottom: 4px;">Your Experience / Review</label>
+                    <textarea id="reviewTextContent" rows="3" placeholder="Apna anubhav yahan likhiye..." required></textarea>
+                </div>
+                <div>
+                    <button type="submit" class="btn-primary" style="width: 100%; border: none; cursor: pointer;">Submit Review</button>
+                </div>
+            </form>
+            <p id="reviewFeedback" style="margin-top: 10px; font-weight: 600; font-size: 0.88rem;"></p>
+        </div>
+    </section>
+
+    <!-- Video Reviews Gallery Section -->
+    <section class="video-testimonials">
+        <div class="section-title">
+            <h2>Patient & Doctor Video Gallery</h2>
+            <p>Watch video stories, updates, and reviews shared from the clinic.</p>
+        </div>
+        <div class="video-grid" id="videoGridContainer">
+            <!-- Dynamic videos will be injected here -->
+        </div>
+    </section>
+
+    <!-- Doctor Video Upload Section -->
+    <section class="doctor-video-upload-section" id="doctorUploadSection">
+        <div class="upload-container-box">
+            <h3 style="color: var(--dark-pink); font-size: 1.5rem; font-weight: 800;"><i class="fa-solid fa-user-doctor"></i> Doctor's Video Upload Portal</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 5px;">Dr. Radhika, yahan se aap Doctor ya Patient ka review/health video upload kar sakti hain.</p>
+            
+            <form id="doctorVideoForm" class="upload-form">
+                <div>
+                    <label style="font-size: 0.88rem; font-weight: 700; color: #374151; display: block; margin-bottom: 5px;">Video Type / Category</label>
+                    <select id="docUploadCategory" required>
+                        <option value="patient">Patient Review Video</option>
+                        <option value="doctor">Doctor Health Tips / Announcement</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 0.88rem; font-weight: 700; color: #374151; display: block; margin-bottom: 5px;">Uploader / Patient Name</label>
+                    <input type="text" id="docUploaderName" placeholder="e.g. Dr. Radhika Trivedi or Suresh Kumar" required>
+                </div>
+                <div>
+                    <label style="font-size: 0.88rem; font-weight: 700; color: #374151; display: block; margin-bottom: 5px;">Video Title / Description</label>
+                    <input type="text" id="docUploaderDesc" placeholder="e.g. Chronic Pain Recovery Story" required>
+                </div>
+                <div>
+                    <label style="font-size: 0.88rem; font-weight: 700; color: #374151; display: block; margin-bottom: 5px;">Select Video File</label>
+                    <input type="file" id="docUploaderFile" accept="video/*" required style="padding: 10px;">
+                </div>
+                <div style="margin-top: 5px;">
+                    <button type="submit" class="btn-primary" style="width: 100%; border: none; cursor: pointer; background: linear-gradient(135deg, var(--dark-pink), var(--primary-pink));">Publish Video</button>
+                </div>
+            </form>
+            <p id="docUploadFeedback" style="margin-top: 15px; font-weight: 600; font-size: 0.9rem;"></p>
+        </div>
+    </section>
+
+    <!-- Appointment Section -->
+    <section id="appointment" class="appointment">
+        <div class="appointment-container">
+            <div class="appointment-header">
+                <h2>Schedule Your Visit</h2>
+                <p>Take the first step toward balanced health. Fill out the reservation details below.</p>
+            </div>
+            <form class="appointment-form">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="abcd" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" placeholder="john@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" placeholder="+91 1234567890" required>
+                </div>
+                <div class="form-group">
+                    <label>Select Service</label>
+                    <select required>
+                        <option value="">Choose service...</option>
+                        <option>General & Family Medicine</option>
+                        <option>Women's Health & Hormonal Concerns</option>
+                        <option>Infertility & Reproductive Health</option>
+                        <option>Skin Problems </option>
+                        <option>Hair & Scalp Concerns</option>
+                        <option>Bone & Joint Disorders</option>
+                        <option>Digestive Health</option>
+                        <option>Renal & Urinary Concerns</option>
+                        <option>Piles, Fissure & Fistula</option>
+                        <option>Thyroid & Metabolic concerns</option>
+                        <option>Child Health</option>
+                        <option>Respiratory Complaints</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Preferred Date</label>
+                    <input type="date" id="appointmentDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Preferred Time Slot</label>
+                    <select required>
+                        <option value="">Choose time slot...</option>
+                        <option>10:00 AM - 11:00 AM</option>
+                        <option>11:00 AM - 12:00 PM</option>
+                        <option>01:00 PM - 02:00 PM</option>
+                        <option>04:00 PM - 05:00 PM</option>
+                        <option>05:00 PM - 06:00 PM</option>
+                        <option>06:00 PM - 07:00 PM</option>
+                        <option>07:00 PM - 08:00 PM</option>
+                        <option>08:00 PM - 09:00 PM</option>
+                        <option>09:00 PM - 10:00 PM</option>
+                    </select>
+                </div>
+                <div class="form-submit">
+                    <button type="submit">Book via WhatsApp</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Digital Slip Modal Popup -->
+    <div class="modal-overlay" id="slipModal">
+        <div class="slip-card">
+            <h3><i class="fa-solid fa-circle-check"></i> Appointment Confirmed!</h3>
+            <p style="font-size: 0.85rem; color: #6B7280;">Your token has been successfully generated.</p>
+            <div class="slip-token" id="modalTokenText">#HR-101</div>
+            <div class="slip-details" id="modalDetailsText"></div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="window.print()" class="btn-primary" style="flex: 1; padding: 10px; font-size: 0.9rem; cursor: pointer; border:none;">Print Slip</button>
+                <button onclick="closeModal()" class="btn-outline" style="flex: 1; padding: 10px; font-size: 0.9rem; cursor: pointer;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3 style="color:white;">Healing Roots</h3>
+                <p>Healing with Trust and Care. Guiding you back to complete wellness through grounded, scientific, and natural medical solutions.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul style="list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#doctor">Doctor</a></li>
+                    <li><a href="#appointment">Appointment</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact Info</h4>
+                <p style="margin-top: 10px;">
+                    <a href="https://www.google.com/maps/search/?api=1&query=178+Panchwati+Nagar+Behind+APTC+Airport+Road+Indore" target="_blank" style="color: #FCE7F3; text-decoration: none;">
+                        <i class="fa-solid fa-location-dot" style="color: #F59E0B; margin-right: 8px;"></i> 178 Panchwati Nagar Behind APTC Airport Road Indore <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.75rem; margin-left: 4px; color: #F59E0B;"></i>
+                    </a>
+                </p>
+                <p style="margin-top: 8px;"><i class="fa-solid fa-phone" style="color: #F59E0B; margin-right: 8px;"></i> +91 8982160554</p>
+                <p style="margin-top: 8px;"><i class="fa-solid fa-envelope" style="color: #F59E0B; margin-right: 8px;"></i> healingroots999@gmail.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Healing Roots Clinic (Dr. Radhika Trivedi). All rights reserved.</p>
+            <p style="margin-top: 8px; font-size: 0.82rem; color: #FCE7F3;">
+                Designed & Developed with <i class="fa-solid fa-heart" style="color: #F59E0B;"></i> by <span class="creator-name">CODE WITH AMAN</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Linked JavaScript File -->
+    <script src="script.js"></script>
+</body>
+</html>

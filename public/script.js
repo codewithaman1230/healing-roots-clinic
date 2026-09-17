@@ -1,0 +1,330 @@
+// 🟢 Automatic Live Doctor Status Logic
+function updateDoctorStatus() {
+    const now = new Date();
+    const day = now.getDay(); 
+    const hour = now.getHours(); 
+
+    const badge = document.getElementById('liveStatusBadge');
+    const dot = document.getElementById('pulseDot');
+    const text = document.getElementById('statusText');
+
+    if (!badge || !dot || !text) return;
+
+    const isWorkingDays = (day >= 1 && day <= 6);
+    const isWorkingHours = (hour >= 9 && hour < 19);
+
+    if (isWorkingDays && isWorkingHours) {
+        text.innerText = "Dr. Radhika Online";
+        dot.style.backgroundColor = "#34D399";
+        dot.style.boxShadow = "0 0 0 rgba(52, 211, 153, 0.4)";
+        badge.style.background = "rgba(255, 255, 255, 0.15)";
+    } else {
+        text.innerText = "Dr. Radhika Offline";
+        dot.style.backgroundColor = "#EF4444";
+        dot.style.boxShadow = "none";
+        badge.style.background = "rgba(239, 68, 68, 0.2)";
+    }
+}
+
+updateDoctorStatus();
+setInterval(updateDoctorStatus, 60000);
+
+// Past Dates Block Logic
+const dateInput = document.getElementById('appointmentDate');
+if (dateInput) {
+    const todayStr = new Date().toISOString().split('T')[0];
+    dateInput.setAttribute('min', todayStr);
+}
+
+const form = document.querySelector('.appointment-form');
+const modal = document.getElementById('slipModal');
+
+if (form) {
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const inputs = form.querySelectorAll('input, select');
+        const fullName = inputs[0].value.trim();
+        const email = inputs[1].value.trim();
+        const phone = inputs[2].value.trim();
+        const service = inputs[3].value;
+        const date = inputs[4].value;
+        const timeSlot = inputs[5].value;
+
+        let appointmentCounter = localStorage.getItem('healingRootsToken') || 101;
+        appointmentCounter = parseInt(appointmentCounter) + 1;
+        localStorage.setItem('healingRootsToken', appointmentCounter);
+
+        const tokenNumber = `#HR-${appointmentCounter}`;
+
+        let patientDatabase = JSON.parse(localStorage.getItem('healingRootsDB')) || {};
+        patientDatabase[phone] = {
+            name: fullName,
+            token: tokenNumber,
+            date: date,
+            time: timeSlot,
+            service: service
+        };
+        localStorage.setItem('healingRootsDB', JSON.stringify(patientDatabase));
+
+        const doctorWhatsAppNumber = "918982160554"; 
+        const message = `Hello Dr. Radhika,\n\nI want to book an appointment at Healing Roots Clinic.\n\n🎟️ *Appointment No: ${tokenNumber}*\n\n*Patient Details:*\n👤 Name: ${fullName}\n📧 Email: ${email}\n📞 Phone: ${phone}\n🩺 Service: ${service}\n📅 Date: ${date}\n⏰ Time: ${timeSlot}`;
+
+        const whatsappURL = `https://wa.me/${doctorWhatsAppNumber}?text=${encodeURIComponent(message)}`;
+
+        document.getElementById('modalTokenText').innerText = tokenNumber;
+        document.getElementById('modalDetailsText').innerHTML = `
+            <p><b>Name:</b> ${fullName}</p>
+            <p><b>Service:</b> ${service}</p>
+            <p><b>Date:</b> ${date}</p>
+            <p><b>Time:</b> ${timeSlot}</p>
+            <div style="margin-top: 15px;">
+                <a href="${whatsappURL}" target="_blank" style="display: block; background: #25D366; color: white; text-align: center; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.9rem;">
+                    <i class="fa-brands fa-whatsapp"></i> Open WhatsApp to Send Message
+                </a>
+            </div>
+        `;
+        modal.style.display = 'flex';
+
+        setTimeout(() => {
+            window.open(whatsappURL, '_blank');
+        }, 800);
+
+        form.reset();
+        if (dateInput) {
+            dateInput.setAttribute('min', new Date().toISOString().split('T')[0]);
+        }
+    });
+}
+
+function closeModal() {
+    if (modal) modal.style.display = 'none';
+}
+
+function checkTokenStatus() {
+    const searchPhoneInput = document.getElementById('searchPhone');
+    const resultDiv = document.getElementById('checkerResult');
+    
+    if (!searchPhoneInput || !resultDiv) return;
+    const searchPhone = searchPhoneInput.value.trim();
+    
+    if(!searchPhone) {
+        resultDiv.style.color = '#DC2626';
+        resultDiv.innerText = "Please enter a valid phone number!";
+        return;
+    }
+
+    let patientDatabase = JSON.parse(localStorage.getItem('healingRootsDB')) || {};
+    
+    if(patientDatabase[searchPhone]) {
+        const data = patientDatabase[searchPhone];
+        resultDiv.style.color = '#0E5C36';
+        resultDiv.innerHTML = `Found! Patient: <b>${data.name}</b> | Token: <span style="color:#1A56DB;">${data.token}</span> | Date: ${data.date} (${data.time})`;
+    } else {
+        resultDiv.style.color = '#DC2626';
+        resultDiv.innerText = "No active appointment found for this phone number.";
+    }
+}
+
+// 🔐 Doctor Admin Authentication System
+let isDoctorLoggedIn = sessionStorage.getItem('healingRootsDocAuth') === 'true';
+
+function toggleDoctorAuth() {
+    if (isDoctorLoggedIn) {
+        isDoctorLoggedIn = false;
+        sessionStorage.removeItem('healingRootsDocAuth');
+        alert("Doctor Portal Logged Out Successfully.");
+        location.reload();
+    } else {
+        const password = prompt("Enter Doctor Admin Password:");
+        if (password === "radhika123") {
+            isDoctorLoggedIn = true;
+            sessionStorage.setItem('healingRootsDocAuth', 'true');
+            alert("Welcome Dr. Radhika! Access granted.");
+            location.reload();
+        } else if (password !== null) {
+            alert("Incorrect Password!");
+        }
+    }
+}
+
+function applyDoctorAuthUI() {
+    const uploadSection = document.getElementById('doctorUploadSection');
+    const adminStatusText = document.getElementById('adminStatusText');
+    const adminAuthBtn = document.getElementById('adminAuthBtn');
+
+    if (isDoctorLoggedIn) {
+        if (uploadSection) uploadSection.style.display = 'block';
+        if (adminStatusText) adminStatusText.innerHTML = '<i class="fa-solid fa-lock-open" style="color: #34D399;"></i> Doctor Portal Active';
+        if (adminAuthBtn) adminAuthBtn.innerText = 'Logout';
+    } else {
+        if (uploadSection) uploadSection.style.display = 'none';
+        if (adminStatusText) adminStatusText.innerHTML = '<i class="fa-solid fa-lock"></i> Doctor Portal Locked';
+        if (adminAuthBtn) adminAuthBtn.innerText = 'Doctor Login';
+    }
+}
+
+// 💬 Written Review Submission & Display Logic
+const testimonialsGrid = document.getElementById('testimonialsGrid');
+const writtenReviewForm = document.getElementById('writtenReviewForm');
+const reviewFeedback = document.getElementById('reviewFeedback');
+
+function appendWrittenReview(name, rating, text) {
+    if (!testimonialsGrid) return;
+    
+    let starsHTML = '';
+    const ratingNum = parseInt(rating);
+    for (let i = 0; i < ratingNum; i++) {
+        starsHTML += '<i class="fa-solid fa-star"></i>';
+    }
+
+    const card = document.createElement('div');
+    card.className = 'testimonial-card';
+    card.innerHTML = `
+        <div class="stars">${starsHTML}</div>
+        <p>"${text}"</p>
+        <div class="client-name">— ${name}</div>
+    `;
+    testimonialsGrid.prepend(card);
+}
+
+if (writtenReviewForm) {
+    writtenReviewForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = document.getElementById('reviewAuthorName').value.trim();
+        const rating = document.getElementById('reviewRating').value;
+        const text = document.getElementById('reviewTextContent').value.trim();
+
+        if (!name || !text) return;
+
+        let savedReviews = JSON.parse(localStorage.getItem('healingRootsWrittenReviews')) || [];
+        savedReviews.push({ name, rating, text });
+        localStorage.setItem('healingRootsWrittenReviews', JSON.stringify(savedReviews));
+
+        appendWrittenReview(name, rating, text);
+
+        reviewFeedback.style.color = '#0E5C36';
+        reviewFeedback.innerText = "✨ Thank you! Your review has been posted successfully.";
+        writtenReviewForm.reset();
+
+        setTimeout(() => { reviewFeedback.innerText = ""; }, 5000);
+    });
+}
+
+// 🎥 Video Gallery & Management Logic
+const videoGridContainer = document.getElementById('videoGridContainer');
+
+function appendVideoToGrid(name, desc, videoSrc, type = 'patient') {
+    if (!videoGridContainer) return;
+
+    const deleteBtnDisplay = isDoctorLoggedIn ? 'inline-flex' : 'none';
+
+    const newCard = document.createElement('div');
+    newCard.className = 'video-card';
+    newCard.innerHTML = `
+        <div class="video-container-box">
+            <video controls>
+                <source src="${videoSrc}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <div class="video-info">
+            <h4>${name}</h4>
+            <p><i class="fa-solid fa-video" style="color: var(--primary-pink); margin-right: 6px;"></i> ${desc}</p>
+            <button class="delete-video-btn" style="display: ${deleteBtnDisplay};" onclick="deleteVideo('${type}', '${videoSrc}')">
+                <i class="fa-solid fa-trash"></i> Delete Video
+            </button>
+        </div>
+    `;
+    videoGridContainer.prepend(newCard);
+}
+
+// 🗑️ Delete Video Function (Doctor Only)
+function deleteVideo(type, videoUrl) {
+    if (!isDoctorLoggedIn) {
+        alert("Unauthorized! Only Dr. Radhika can delete videos.");
+        return;
+    }
+
+    if (!confirm("Kya aap waqai is video ko delete karna chahte hain?")) return;
+
+    if (type === 'doctor') {
+        let savedDocVideos = JSON.parse(localStorage.getItem('healingRootsDocVideos')) || [];
+        savedDocVideos = savedDocVideos.filter(item => item.url !== videoUrl);
+        localStorage.setItem('healingRootsDocVideos', JSON.stringify(savedDocVideos));
+    } else {
+        let savedPatientVideos = JSON.parse(localStorage.getItem('healingRootsPatientVideos')) || [];
+        savedPatientVideos = savedPatientVideos.filter(item => item.url !== videoUrl);
+        localStorage.setItem('healingRootsPatientVideos', JSON.stringify(savedPatientVideos));
+    }
+
+    location.reload();
+}
+
+// Load Saved Data on Page Load
+window.addEventListener('DOMContentLoaded', () => {
+    applyDoctorAuthUI();
+
+    // Load Written Reviews
+    let savedReviews = JSON.parse(localStorage.getItem('healingRootsWrittenReviews')) || [];
+    savedReviews.forEach(item => {
+        appendWrittenReview(item.name, item.rating, item.text);
+    });
+
+    // Load Doctor Videos
+    let savedDocVideos = JSON.parse(localStorage.getItem('healingRootsDocVideos')) || [];
+    savedDocVideos.forEach(item => {
+        appendVideoToGrid(item.name, item.desc, item.url, 'doctor');
+    });
+
+    // Load Patient Videos Uploaded by Doctor
+    let savedPatientVideos = JSON.parse(localStorage.getItem('healingRootsPatientVideos')) || [];
+    savedPatientVideos.forEach(item => {
+        appendVideoToGrid(item.name, item.desc, item.url, 'patient');
+    });
+});
+
+// Doctor Upload Form Logic
+const doctorVideoForm = document.getElementById('doctorVideoForm');
+const docUploadFeedback = document.getElementById('docUploadFeedback');
+
+if (doctorVideoForm) {
+    doctorVideoForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        if (!isDoctorLoggedIn) {
+            alert("Please login as Doctor first.");
+            return;
+        }
+
+        const category = document.getElementById('docUploadCategory').value;
+        const name = document.getElementById('docUploaderName').value.trim();
+        const desc = document.getElementById('docUploaderDesc').value.trim();
+        const file = document.getElementById('docUploaderFile').files[0];
+
+        if (!file) return;
+
+        docUploadFeedback.style.color = '#B45309';
+        docUploadFeedback.innerText = "Uploading video, please wait...";
+
+        const videoObjectURL = URL.createObjectURL(file);
+
+        if (category === 'doctor') {
+            let savedDocVideos = JSON.parse(localStorage.getItem('healingRootsDocVideos')) || [];
+            savedDocVideos.push({ name, desc, url: videoObjectURL });
+            localStorage.setItem('healingRootsDocVideos', JSON.stringify(savedDocVideos));
+        } else {
+            let savedPatientVideos = JSON.parse(localStorage.getItem('healingRootsPatientVideos')) || [];
+            savedPatientVideos.push({ name, desc, url: videoObjectURL });
+            localStorage.setItem('healingRootsPatientVideos', JSON.stringify(savedPatientVideos));
+        }
+
+        appendVideoToGrid(name, desc, videoObjectURL, category);
+
+        docUploadFeedback.style.color = '#0E5C36';
+        docUploadFeedback.innerText = "✨ Success! Video has been published to the gallery.";
+        doctorVideoForm.reset();
+
+        setTimeout(() => { docUploadFeedback.innerText = ""; }, 5000);
+    });
+}

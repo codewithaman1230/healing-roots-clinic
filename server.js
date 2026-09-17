@@ -10,24 +10,11 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
-// Static files and uploads folder (public folder check fix)
+// Static files and uploads folder
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Multer Storage Configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, 'uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.deployTimestamp || (Date.now() + '-' + file.originalname));
-  }
-});
-// Fixed timestamp key safety
+// Fixed timestamp key safety for Multer
 const safeStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadDir = path.join(__dirname, 'uploads');
@@ -42,7 +29,7 @@ const safeStorage = multer.diskStorage({
 });
 const upload = multer({ storage: safeStorage });
 
-// Mongoose Schema & Model
+// Mongoose Schema & Model (Safe model init)
 const videoSchema = new mongoose.Schema({
   title: String,
   description: String,
@@ -51,7 +38,7 @@ const videoSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-const Video = mongoose.model('Video', videoSchema);
+const Video = mongoose.models.Video || mongoose.model('Video', videoSchema);
 
 // 1. Get All Videos
 app.get('/api/videos', async (req, res) => {
@@ -80,7 +67,7 @@ app.post('/api/upload', upload.single('video'), async (req, res) => {
     await newVideo.save();
     res.json({ message: 'Video uploaded successfully!', video: newVideo });
   } catch (err) {
-    res.status(550).json({ error: 'Failed to upload video', details: err.message });
+    res.status(500).json({ error: 'Failed to upload video', details: err.message });
   }
 });
 
@@ -92,9 +79,11 @@ app.delete('/api/videos/:id', async (req, res) => {
       return res.status(404).json({ error: 'Video not found' });
     }
 
-    const filePath = path.join(__dirname, video.videoUrl);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    if (video.videoUrl) {
+      const filePath = path.join(__dirname, video.videoUrl);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
     }
 
     await Video.findByIdAndDelete(req.params.id);
@@ -109,14 +98,14 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Database Connection & Server Start (Cloud MongoDB URI support)
+// Database Connection & Server Start (Cloud MongoDB URI support + Render '0.0.0.0' fix)
 const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://healingroots:RwprfBx11vCPmOE9@cluster0.xc0oab3.mongodb.net/videoApp?appName=Cluster0';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://healingroots:RwprfBx11vCPm0E9@cluster0.xc0oab3.mongodb.net/videoApp?appName=Cluster0';
 
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log('Database connected successfully!');
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server is running on port ${PORT}`);
     });
   })

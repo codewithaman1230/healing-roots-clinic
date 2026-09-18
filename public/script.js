@@ -16,12 +16,10 @@ function updateDoctorStatus() {
     if (isWorkingDays && isWorkingHours) {
         text.innerText = "Dr. Radhika Online";
         dot.style.backgroundColor = "#34D399";
-        dot.style.boxShadow = "0 0 0 rgba(52, 211, 153, 0.4)";
         badge.style.background = "rgba(255, 255, 255, 0.15)";
     } else {
         text.innerText = "Dr. Radhika Offline";
         dot.style.backgroundColor = "#EF4444";
-        dot.style.boxShadow = "none";
         badge.style.background = "rgba(239, 68, 68, 0.2)";
     }
 }
@@ -43,12 +41,13 @@ if (form) {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        // Exact targeting matching your HTML structure inputs/selects inside appointment-form
+        // Safe targeting of inputs/selects inside the form
         const textInputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]');
         const fullName = textInputs[0] ? textInputs[0].value.trim() : '';
         const email = textInputs ? textInputs.value.trim() : '';
         const phone = textInputs ? textInputs.value.trim() : '';
         
+        // Accurate selection: selects[0] = Service, selects = Time Slot
         const selects = form.querySelectorAll('select');
         const service = selects[0] ? selects[0].value : '';
         const timeSlot = selects ? selects.value : '';
@@ -75,13 +74,15 @@ if (form) {
         };
         localStorage.setItem('healingRootsDB', JSON.stringify(patientDatabase));
 
+        // Format number properly (without +, just country code + number like 918982160554)
         const doctorWhatsAppNumber = "918982160554"; 
         const message = `Hello Dr. Radhika,\n\nI want to book an appointment at Healing Roots Clinic.\n\n🎟️ Appointment No: ${tokenNumber}\n\nPatient Details:\n👤 Name: ${fullName}\n📧 Email: ${email}\n📞 Phone: ${phone}\n🩺 Service: ${service}\n📅 Date: ${date}\n⏰ Time: ${timeSlot}`;
 
-        const whatsappURL = `https://wa.me/${doctorWhatsAppNumber}?text=${encodeURIComponent(message)}`;
+        const whatsappURL = `https://api.whatsapp.com/send?phone=${doctorWhatsAppNumber}&text=${encodeURIComponent(message)}`;
 
         const modalTokenText = document.getElementById('modalTokenText');
         const modalDetailsText = document.getElementById('modalDetailsText');
+        const modalWhatsAppBtn = document.getElementById('modalWhatsAppBtn');
 
         if (modalTokenText) modalTokenText.innerText = tokenNumber;
         if (modalDetailsText) {
@@ -92,6 +93,11 @@ if (form) {
                 <p><b>Time:</b> ${timeSlot}</p>
             `;
         }
+        if (modalWhatsAppBtn) {
+            modalWhatsAppBtn.href = whatsappURL;
+        }
+
+        // Show confirmation modal
         if (modal) modal.style.display = 'flex';
 
         form.reset();
@@ -99,8 +105,15 @@ if (form) {
             dateInput.setAttribute('min', new Date().toISOString().split('T')[0]);
         }
 
-        // Direct WhatsApp redirection / launch immediately upon submit
-        window.open(whatsappURL, '_blank');
+        // Programmatic open attempt (safe fallback to modal button if blocked)
+        try {
+            const newWindow = window.open(whatsappURL, '_blank');
+            if (!newWindow) {
+                console.log('Popup blocked by browser, user can click modal button.');
+            }
+        } catch (err) {
+            console.error('Window open error:', err);
+        }
     });
 }
 

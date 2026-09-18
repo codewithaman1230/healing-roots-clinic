@@ -43,13 +43,19 @@ if (form) {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const inputs = form.querySelectorAll('input, select');
-        const fullName = inputs[0].value.trim();
-        const email = inputs.value.trim();
-        const phone = inputs.value.trim();
-        const service = inputs.value;
-        const date = inputs.value;
-        const timeSlot = inputs.value;
+        // Safe name/id/attribute targeting inside appointment form
+        const fullName = form.querySelector('input[type="text"]').value.trim();
+        const email = form.querySelector('input[type="email"]').value.trim();
+        const phone = form.querySelector('input[type="tel"]').value.trim();
+        const selects = form.querySelectorAll('select');
+        const service = selects[0].value;
+        const date = dateInput ? dateInput.value : '';
+        const timeSlot = selects.value;
+
+        if (!fullName || !phone || !service || !date || !timeSlot) {
+            alert('Please fill in all required appointment details.');
+            return;
+        }
 
         let appointmentCounter = localStorage.getItem('healingRootsToken') || 101;
         appointmentCounter = parseInt(appointmentCounter) + 1;
@@ -72,19 +78,24 @@ if (form) {
 
         const whatsappURL = `https://wa.me/${doctorWhatsAppNumber}?text=${encodeURIComponent(message)}`;
 
-        document.getElementById('modalTokenText').innerText = tokenNumber;
-        document.getElementById('modalDetailsText').innerHTML = `
-            <p><b>Name:</b> ${fullName}</p>
-            <p><b>Service:</b> ${service}</p>
-            <p><b>Date:</b> ${date}</p>
-            <p><b>Time:</b> ${timeSlot}</p>
-            <div style="margin-top: 15px;">
-                <a href="${whatsappURL}" target="_blank" style="display: block; background: #25D366; color: white; text-align: center; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.9rem;">
-                    <i class="fa-brands fa-whatsapp"></i> Open WhatsApp to Send Message
-                </a>
-            </div>
-        `;
-        modal.style.display = 'flex';
+        const modalTokenText = document.getElementById('modalTokenText');
+        const modalDetailsText = document.getElementById('modalDetailsText');
+
+        if (modalTokenText) modalTokenText.innerText = tokenNumber;
+        if (modalDetailsText) {
+            modalDetailsText.innerHTML = `
+                <p><b>Name:</b> ${fullName}</p>
+                <p><b>Service:</b> ${service}</p>
+                <p><b>Date:</b> ${date}</p>
+                <p><b>Time:</b> ${timeSlot}</p>
+                <div style="margin-top: 15px;">
+                    <a href="${whatsappURL}" target="_blank" style="display: block; background: #25D366; color: white; text-align: center; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.9rem;">
+                        <i class="fa-brands fa-whatsapp"></i> Open WhatsApp to Send Message
+                    </a>
+                </div>
+            `;
+        }
+        if (modal) modal.style.display = 'flex';
 
         setTimeout(() => {
             window.open(whatsappURL, '_blank');

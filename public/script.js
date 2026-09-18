@@ -41,13 +41,15 @@ if (form) {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        // Safe targeting of inputs/selects inside the form
-        const textInputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]');
-        const fullName = textInputs[0] ? textInputs[0].value.trim() : '';
-        const email = textInputs ? textInputs.value.trim() : '';
-        const phone = textInputs ? textInputs.value.trim() : '';
+        // Safe distinct field selection by index/type or order in appointment form
+        const textInputs = form.querySelectorAll('input[type="text"]');
+        const emailInput = form.querySelector('input[type="email"]');
+        const telInput = form.querySelector('input[type="tel"]');
         
-        // Accurate selection: selects[0] = Service, selects = Time Slot
+        const fullName = textInputs[0] ? textInputs[0].value.trim() : '';
+        const email = emailInput ? emailInput.value.trim() : '';
+        const phone = telInput ? telInput.value.trim() : '';
+        
         const selects = form.querySelectorAll('select');
         const service = selects[0] ? selects[0].value : '';
         const timeSlot = selects ? selects.value : '';
@@ -74,7 +76,6 @@ if (form) {
         };
         localStorage.setItem('healingRootsDB', JSON.stringify(patientDatabase));
 
-        // Format number properly (without +, just country code + number like 918982160554)
         const doctorWhatsAppNumber = "918982160554"; 
         const message = `Hello Dr. Radhika,\n\nI want to book an appointment at Healing Roots Clinic.\n\n🎟️ Appointment No: ${tokenNumber}\n\nPatient Details:\n👤 Name: ${fullName}\n📧 Email: ${email}\n📞 Phone: ${phone}\n🩺 Service: ${service}\n📅 Date: ${date}\n⏰ Time: ${timeSlot}`;
 
@@ -82,19 +83,20 @@ if (form) {
 
         const modalTokenText = document.getElementById('modalTokenText');
         const modalDetailsText = document.getElementById('modalDetailsText');
-        const modalWhatsAppBtn = document.getElementById('modalWhatsAppBtn');
 
         if (modalTokenText) modalTokenText.innerText = tokenNumber;
         if (modalDetailsText) {
             modalDetailsText.innerHTML = `
                 <p><b>Name:</b> ${fullName}</p>
+                <p><b>Email:</b> ${email || 'N/A'}</p>
+                <p><b>Phone:</b> ${phone}</p>
                 <p><b>Service:</b> ${service}</p>
                 <p><b>Date:</b> ${date}</p>
                 <p><b>Time:</b> ${timeSlot}</p>
+                <div style="margin-top: 15px;">
+                    <a href="${whatsappURL}" target="_blank" class="btn-primary" style="display: block; text-align: center; text-decoration: none;">Open WhatsApp Now</a>
+                </div>
             `;
-        }
-        if (modalWhatsAppBtn) {
-            modalWhatsAppBtn.href = whatsappURL;
         }
 
         // Show confirmation modal
@@ -105,12 +107,9 @@ if (form) {
             dateInput.setAttribute('min', new Date().toISOString().split('T')[0]);
         }
 
-        // Programmatic open attempt (safe fallback to modal button if blocked)
+        // Programmatic open attempt
         try {
-            const newWindow = window.open(whatsappURL, '_blank');
-            if (!newWindow) {
-                console.log('Popup blocked by browser, user can click modal button.');
-            }
+            window.open(whatsappURL, '_blank');
         } catch (err) {
             console.error('Window open error:', err);
         }

@@ -43,17 +43,19 @@ if (form) {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        // Safe name/id/attribute targeting inside appointment form
-        const fullName = form.querySelector('input[type="text"]').value.trim();
-        const email = form.querySelector('input[type="email"]').value.trim();
-        const phone = form.querySelector('input[type="tel"]').value.trim();
+        // Safe targeting of inputs/selects inside the form
+        const textInputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]');
+        const fullName = textInputs[0] ? textInputs[0].value.trim() : '';
+        const email = textInputs ? textInputs.value.trim() : '';
+        const phone = textInputs ? textInputs.value.trim() : '';
+        
         const selects = form.querySelectorAll('select');
-        const service = selects[0].value;
-        const date = dateInput ? dateInput.value : '';
+        const service = selects[0] ? selects[0].value : '';
         const timeSlot = selects ? selects.value : '';
+        const date = dateInput ? dateInput.value : '';
 
-        if (!fullName || !phone || !service || !date) {
-            alert('Please fill in all required appointment details.');
+        if (!fullName || !phone || !service || !date || !timeSlot) {
+            alert('Kripya saari details (Name, Phone, Service, Date, Time Slot) bharein!');
             return;
         }
 
@@ -78,6 +80,9 @@ if (form) {
 
         const whatsappURL = `https://wa.me/${doctorWhatsAppNumber}?text=${encodeURIComponent(message)}`;
 
+        // Direct WhatsApp trigger on click/submit
+        window.open(whatsappURL, '_blank');
+
         const modalTokenText = document.getElementById('modalTokenText');
         const modalDetailsText = document.getElementById('modalDetailsText');
 
@@ -90,7 +95,7 @@ if (form) {
                 <p><b>Time:</b> ${timeSlot}</p>
                 <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
                     <a href="${whatsappURL}" target="_blank" rel="noopener noreferrer" style="display: block; background: #25D366; color: white; text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.95rem;">
-                        <i class="fa-brands fa-whatsapp"></i> Click to Send WhatsApp Message
+                        <i class="fa-brands fa-whatsapp"></i> Re-open WhatsApp Chat
                     </a>
                 </div>
             `;

@@ -41,22 +41,19 @@ if (form) {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        // Safe distinct field selection by index/type or order in appointment form
-        const textInputs = form.querySelectorAll('input[type="text"]');
-        const emailInput = form.querySelector('input[type="email"]');
-        const telInput = form.querySelector('input[type="tel"]');
-        
-        const fullName = textInputs[0] ? textInputs[0].value.trim() : '';
-        const email = emailInput ? emailInput.value.trim() : '';
-        const phone = telInput ? telInput.value.trim() : '';
+        // Direct reliable input selection inside appointment form
+        const allInputs = form.querySelectorAll('input');
+        const fullName = allInputs[0] ? allInputs[0].value.trim() : '';
+        const email = allInputs ? allInputs.value.trim() : '';
+        const phone = allInputs ? allInputs.value.trim() : '';
+        const date = allInputs ? allInputs.value.trim() : '';
         
         const selects = form.querySelectorAll('select');
         const service = selects[0] ? selects[0].value : '';
         const timeSlot = selects ? selects.value : '';
-        const date = dateInput ? dateInput.value : '';
 
         if (!fullName || !phone || !service || !date || !timeSlot) {
-            alert('Kripya saari details (Name, Phone, Service, Date, Time Slot) bharein!');
+            alert('Kripya saari required details (Full Name, Phone Number, Service, Date, Time Slot) bharein!');
             return;
         }
 
@@ -77,7 +74,7 @@ if (form) {
         localStorage.setItem('healingRootsDB', JSON.stringify(patientDatabase));
 
         const doctorWhatsAppNumber = "918982160554"; 
-        const message = `Hello Dr. Radhika,\n\nI want to book an appointment at Healing Roots Clinic.\n\n🎟️ Appointment No: ${tokenNumber}\n\nPatient Details:\n👤 Name: ${fullName}\n📧 Email: ${email}\n📞 Phone: ${phone}\n🩺 Service: ${service}\n📅 Date: ${date}\n⏰ Time: ${timeSlot}`;
+        const message = `Hello Dr. Radhika,\n\nI want to book an appointment at Healing Roots Clinic.\n\n🎟️ Appointment No: ${tokenNumber}\n\nPatient Details:\n👤 Name: ${fullName}\n📧 Email: ${email || 'N/A'}\n📞 Phone: ${phone}\n🩺 Service: ${service}\n📅 Date: ${date}\n⏰ Time: ${timeSlot}`;
 
         const whatsappURL = `https://api.whatsapp.com/send?phone=${doctorWhatsAppNumber}&text=${encodeURIComponent(message)}`;
 
@@ -107,12 +104,8 @@ if (form) {
             dateInput.setAttribute('min', new Date().toISOString().split('T')[0]);
         }
 
-        // Programmatic open attempt
-        try {
-            window.open(whatsappURL, '_blank');
-        } catch (err) {
-            console.error('Window open error:', err);
-        }
+        // Direct open WhatsApp
+        window.open(whatsappURL, '_blank');
     });
 }
 

@@ -298,32 +298,32 @@ Mainne HEALING ROOTS – Dr. Radhika Trivedi (Homeopathy Clinic) se treatment li
             <form class="appointment-form">
                 <div class="form-group">
                     <label>Full Name</label>
-                    <input type="text" placeholder="abcd" required>
+                    <input type="text" id="apptFullName" placeholder="abcd" required>
                 </div>
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" placeholder="john@example.com">
+                    <input type="email" id="apptEmail" placeholder="john@example.com">
                 </div>
                 <div class="form-group">
                     <label>Phone Number</label>
-                    <input type="tel" placeholder="+91 1234567890" required>
+                    <input type="tel" id="apptPhone" placeholder="+91 1234567890" required>
                 </div>
                 <div class="form-group">
                     <label>Select Service</label>
-                    <select required>
+                    <select id="apptService" required>
                         <option value="">Choose service...</option>
-                        <option>General & Family Medicine</option>
-                        <option>Women's Health & Hormonal Concerns</option>
-                        <option>Infertility & Reproductive Health</option>
-                        <option>Skin Problems </option>
-                        <option>Hair & Scalp Concerns</option>
-                        <option>Bone & Joint Disorders</option>
-                        <option>Digestive Health</option>
-                        <option>Renal & Urinary Concerns</option>
-                        <option>Piles, Fissure & Fistula</option>
-                        <option>Thyroid & Metabolic concerns</option>
-                        <option>Child Health</option>
-                        <option>Respiratory Complaints</option>
+                        <option value="General & Family Medicine">General & Family Medicine</option>
+                        <option value="Women's Health & Hormonal Concerns">Women's Health & Hormonal Concerns</option>
+                        <option value="Infertility & Reproductive Health">Infertility & Reproductive Health</option>
+                        <option value="Skin Problems">Skin Problems</option>
+                        <option value="Hair & Scalp Concerns">Hair & Scalp Concerns</option>
+                        <option value="Bone & Joint Disorders">Bone & Joint Disorders</option>
+                        <option value="Digestive Health">Digestive Health</option>
+                        <option value="Renal & Urinary Concerns">Renal & Urinary Concerns</option>
+                        <option value="Piles, Fissure & Fistula">Piles, Fissure & Fistula</option>
+                        <option value="Thyroid & Metabolic concerns">Thyroid & Metabolic concerns</option>
+                        <option value="Child Health">Child Health</option>
+                        <option value="Respiratory Complaints">Respiratory Complaints</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -332,17 +332,17 @@ Mainne HEALING ROOTS – Dr. Radhika Trivedi (Homeopathy Clinic) se treatment li
                 </div>
                 <div class="form-group">
                     <label>Preferred Time Slot</label>
-                    <select required>
+                    <select id="apptTimeSlot" required>
                         <option value="">Choose time slot...</option>
-                        <option>10:00 AM - 11:00 AM</option>
-                        <option>11:00 AM - 12:00 PM</option>
-                        <option>01:00 PM - 02:00 PM</option>
-                        <option>04:00 PM - 05:00 PM</option>
-                        <option>05:00 PM - 06:00 PM</option>
-                        <option>06:00 PM - 07:00 PM</option>
-                        <option>07:00 PM - 08:00 PM</option>
-                        <option>08:00 PM - 09:00 PM</option>
-                        <option>09:00 PM - 10:00 PM</option>
+                        <option value="10:00 AM - 11:00 AM">10:00 AM - 11:00 AM</option>
+                        <option value="11:00 AM - 12:00 PM">11:00 AM - 12:00 PM</option>
+                        <option value="01:00 PM - 02:00 PM">01:00 PM - 02:00 PM</option>
+                        <option value="04:00 PM - 05:00 PM">04:00 PM - 05:00 PM</option>
+                        <option value="05:00 PM - 06:00 PM">05:00 PM - 06:00 PM</option>
+                        <option value="06:00 PM - 07:00 PM">06:00 PM - 07:00 PM</option>
+                        <option value="07:00 PM - 08:00 PM">07:00 PM - 08:00 PM</option>
+                        <option value="08:00 PM - 09:00 PM">08:00 PM - 09:00 PM</option>
+                        <option value="09:00 PM - 10:00 PM">09:00 PM - 10:00 PM</option>
                     </select>
                 </div>
                 <div class="form-submit">
@@ -359,7 +359,7 @@ Mainne HEALING ROOTS – Dr. Radhika Trivedi (Homeopathy Clinic) se treatment li
             <p style="font-size: 0.85rem; color: #6B7280;">Your token has been successfully generated.</p>
             <div class="slip-token" id="modalTokenText">#HR-101</div>
             <div class="slip-details" id="modalDetailsText"></div>
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <div style="display: flex; gap: 10px;">
                 <button onclick="window.print()" class="btn-primary" style="flex: 1; padding: 10px; font-size: 0.9rem; cursor: pointer; border:none;">Print Slip</button>
                 <button onclick="closeModal()" class="btn-outline" style="flex: 1; padding: 10px; font-size: 0.9rem; cursor: pointer;">Close</button>
             </div>

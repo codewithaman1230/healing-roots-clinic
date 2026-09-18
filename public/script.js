@@ -41,16 +41,19 @@ if (form) {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        // Direct reliable input selection inside appointment form
-        const allInputs = form.querySelectorAll('input');
-        const fullName = allInputs[0] ? allInputs[0].value.trim() : '';
-        const email = allInputs ? allInputs.value.trim() : '';
-        const phone = allInputs ? allInputs.value.trim() : '';
-        const date = allInputs ? allInputs.value.trim() : '';
-        
-        const selects = form.querySelectorAll('select');
-        const service = selects[0] ? selects[0].value : '';
-        const timeSlot = selects ? selects.value : '';
+        // Safe direct ID targeting
+        const fullNameEl = document.getElementById('apptFullName');
+        const emailEl = document.getElementById('apptEmail');
+        const phoneEl = document.getElementById('apptPhone');
+        const serviceEl = document.getElementById('apptService');
+        const timeSlotEl = document.getElementById('apptTimeSlot');
+
+        const fullName = fullNameEl ? fullNameEl.value.trim() : '';
+        const email = emailEl ? emailEl.value.trim() : '';
+        const phone = phoneEl ? phoneEl.value.trim() : '';
+        const service = serviceEl ? serviceEl.value : '';
+        const date = dateInput ? dateInput.value : '';
+        const timeSlot = timeSlotEl ? timeSlotEl.value : '';
 
         if (!fullName || !phone || !service || !date || !timeSlot) {
             alert('Kripya saari required details (Full Name, Phone Number, Service, Date, Time Slot) bharein!');
@@ -91,7 +94,7 @@ if (form) {
                 <p><b>Date:</b> ${date}</p>
                 <p><b>Time:</b> ${timeSlot}</p>
                 <div style="margin-top: 15px;">
-                    <a href="${whatsappURL}" target="_blank" class="btn-primary" style="display: block; text-align: center; text-decoration: none;">Open WhatsApp Now</a>
+                    <a href="${whatsappURL}" target="_blank" class="btn-primary" style="display: block; text-align: center; text-decoration: none;">Open WhatsApp Directly</a>
                 </div>
             `;
         }
@@ -104,8 +107,12 @@ if (form) {
             dateInput.setAttribute('min', new Date().toISOString().split('T')[0]);
         }
 
-        // Direct open WhatsApp
-        window.open(whatsappURL, '_blank');
+        // Direct open WhatsApp window
+        try {
+            window.open(whatsappURL, '_blank');
+        } catch (err) {
+            console.error('Window open error:', err);
+        }
     });
 }
 

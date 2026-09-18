@@ -27,11 +27,54 @@ function updateDoctorStatus() {
 updateDoctorStatus();
 setInterval(updateDoctorStatus, 60000);
 
-// Past Dates Block Logic
+// Past Dates Block Logic & 20-min Day-wise Time Slot Generator
+function generate20MinSlots(startHour, startMin, endHour) {
+    const slots = [];
+    let curTotal = startHour * 60 + startMin;
+    const endTotal = endHour * 60;
+    while (curTotal <= endTotal) {
+        let h = Math.floor(curTotal / 60);
+        let m = curTotal % 60;
+        let period = h >= 12 ? 'PM' : 'AM';
+        let displayH = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+        let timeStr = `${String(displayH).padStart(2, '0')}:${String(m).padStart(2, '0')} ${period}`;
+        slots.push(timeStr);
+        curTotal += 20; // 20 min gap
+    }
+    return slots;
+}
+
+function updateDayWiseTimeSlots() {
+    const slotSelect = document.getElementById('apptTimeSlot');
+    const dateInput = document.getElementById('appointmentDate');
+    if (!slotSelect || !dateInput) return;
+
+    // Day/Date based booking filter or default 20-min slots from 10:00 AM onwards (e.g. 10:20 auto progression base)
+    const baseSlots = generate20MinSlots(10, 0, 21); // 10:00 AM to 9:00 PM (20-min gap)
+    let selectedDate = dateInput.value;
+    
+    // Day-wise booked check from localStorage storage
+    let dayBookings = JSON.parse(localStorage.getItem(`day_bookings_${selectedDate}`)) || [];
+
+    slotSelect.innerHTML = '<option value="">Choose time slot (20 min gap)...</option>';
+    baseSlots.forEach(s => {
+        const option = document.createElement('option');
+        option.value = s;
+        if (dayBookings.includes(s)) {
+            option.textContent = `${s} (Booked / Next 20m Shifted)`;
+        } else {
+            option.textContent = s;
+        }
+        slotSelect.appendChild(option);
+    });
+}
+
 const dateInput = document.getElementById('appointmentDate');
 if (dateInput) {
     const todayStr = new Date().toISOString().split('T')[0];
     dateInput.setAttribute('min', todayStr);
+    dateInput.value = todayStr;
+    updateDayWiseTimeSlots();
 }
 
 const form = document.querySelector('.appointment-form');
@@ -60,6 +103,14 @@ if (form) {
             return;
         }
 
+        // Day-wise record add karlo taki next appointment automatically 20 min aage/adjust ho sake
+        let dayKey = `day_bookings_${date}`;
+        let dayBookings = JSON.parse(localStorage.getItem(dayKey)) || [];
+        if (!dayBookings.includes(timeSlot)) {
+            dayBookings.push(timeSlot);
+            localStorage.setItem(dayKey, JSON.stringify(dayBookings));
+        }
+
         let appointmentCounter = localStorage.getItem('healingRootsToken') || 101;
         appointmentCounter = parseInt(appointmentCounter) + 1;
         localStorage.setItem('healingRootsToken', appointmentCounter);
@@ -77,7 +128,7 @@ if (form) {
         localStorage.setItem('healingRootsDB', JSON.stringify(patientDatabase));
 
         const doctorWhatsAppNumber = "918982160554"; 
-        const message = `Hello Dr. Radhika,\n\nI want to book an appointment at Healing Roots Clinic.\n\n🎟️ Appointment No: ${tokenNumber}\n\nPatient Details:\n👤 Name: ${fullName}\n📧 Email: ${email || 'N/A'}\n📞 Phone: ${phone}\n🩺 Service: ${service}\n📅 Date: ${date}\n⏰ Time: ${timeSlot}`;
+        const message = `Hello Dr. Radhika,\n\nI want to book an appointment at Healing Roots Clinic.\n\n🎟️ Appointment No: ${tokenNumber}\n\nPatient Details:\n👤 Name: ${fullName}\n📧 Email: ${email || 'N/A'}\n📞 Phone: ${phone}\n🩺 Service: ${service}\n📅 Date: ${date}\n⏰ Time: ${timeSlot} (20-min gap slot)`;
 
         const whatsappURL = `https://api.whatsapp.com/send?phone=${doctorWhatsAppNumber}&text=${encodeURIComponent(message)}`;
 
@@ -106,6 +157,7 @@ if (form) {
         if (dateInput) {
             dateInput.setAttribute('min', new Date().toISOString().split('T')[0]);
         }
+        updateDayWiseTimeSlots();
 
         // Direct open WhatsApp window
         try {

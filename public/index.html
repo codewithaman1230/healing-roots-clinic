@@ -288,12 +288,12 @@ Mainne HEALING ROOTS – Dr. Radhika Trivedi (Homeopathy Clinic) se treatment li
         </div>
     </section>
 
-    <!-- Appointment Section -->
+    <!-- Appointment Section (20-Minute Gap Options with Day-wise/Date-wise support) -->
     <section id="appointment" class="appointment">
         <div class="appointment-container">
             <div class="appointment-header">
                 <h2>Schedule Your Visit</h2>
-                <p>Take the first step toward balanced health. Fill out the reservation details below.</p>
+                <p>Take the first step toward balanced health. Fill out the reservation details below (20 min gap slots).</p>
             </div>
             <form class="appointment-form">
                 <div class="form-group">
@@ -327,22 +327,13 @@ Mainne HEALING ROOTS – Dr. Radhika Trivedi (Homeopathy Clinic) se treatment li
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Preferred Date</label>
-                    <input type="date" id="appointmentDate" required>
+                    <label>Preferred Date (Day-wise)</label>
+                    <input type="date" id="appointmentDate" required onchange="updateDayWiseTimeSlots()">
                 </div>
                 <div class="form-group">
-                    <label>Preferred Time Slot</label>
+                    <label>Preferred Time Slot (20-min gap)</label>
                     <select id="apptTimeSlot" required>
                         <option value="">Choose time slot...</option>
-                        <option value="10:00 AM - 11:00 AM">10:00 AM - 11:00 AM</option>
-                        <option value="11:00 AM - 12:00 PM">11:00 AM - 12:00 PM</option>
-                        <option value="01:00 PM - 02:00 PM">01:00 PM - 02:00 PM</option>
-                        <option value="04:00 PM - 05:00 PM">04:00 PM - 05:00 PM</option>
-                        <option value="05:00 PM - 06:00 PM">05:00 PM - 06:00 PM</option>
-                        <option value="06:00 PM - 07:00 PM">06:00 PM - 07:00 PM</option>
-                        <option value="07:00 PM - 08:00 PM">07:00 PM - 08:00 PM</option>
-                        <option value="08:00 PM - 09:00 PM">08:00 PM - 09:00 PM</option>
-                        <option value="09:00 PM - 10:00 PM">09:00 PM - 10:00 PM</option>
                     </select>
                 </div>
                 <div class="form-submit">

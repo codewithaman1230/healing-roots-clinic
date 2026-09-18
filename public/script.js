@@ -43,16 +43,15 @@ if (form) {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        // Safe targeting of inputs/selects inside the form
+        // Exact targeting matching your HTML structure inputs/selects inside appointment-form
         const textInputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]');
         const fullName = textInputs[0] ? textInputs[0].value.trim() : '';
         const email = textInputs ? textInputs.value.trim() : '';
         const phone = textInputs ? textInputs.value.trim() : '';
         
-        // Accurate selection for service and time slot dropdowns
         const selects = form.querySelectorAll('select');
         const service = selects[0] ? selects[0].value : '';
-        const timeSlot = selects ? selects.value : (selects[0] ? selects[0].value : '');
+        const timeSlot = selects ? selects.value : '';
         const date = dateInput ? dateInput.value : '';
 
         if (!fullName || !phone || !service || !date || !timeSlot) {
@@ -100,10 +99,8 @@ if (form) {
             dateInput.setAttribute('min', new Date().toISOString().split('T')[0]);
         }
 
-        // Direct WhatsApp redirection / launch after short delay so modal renders clean slip
-        setTimeout(() => {
-            window.location.href = whatsappURL;
-        }, 1000);
+        // Direct WhatsApp redirection / launch immediately upon submit
+        window.open(whatsappURL, '_blank');
     });
 }
 

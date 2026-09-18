@@ -43,15 +43,16 @@ if (form) {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        // Exact input selectors
+        // Safe targeting of inputs/selects inside the form
         const textInputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]');
         const fullName = textInputs[0] ? textInputs[0].value.trim() : '';
         const email = textInputs ? textInputs.value.trim() : '';
         const phone = textInputs ? textInputs.value.trim() : '';
         
+        // Accurate selection for service and time slot dropdowns
         const selects = form.querySelectorAll('select');
         const service = selects[0] ? selects[0].value : '';
-        const timeSlot = selects ? selects.value : '';
+        const timeSlot = selects ? selects.value : (selects[0] ? selects[0].value : '');
         const date = dateInput ? dateInput.value : '';
 
         if (!fullName || !phone || !service || !date || !timeSlot) {
@@ -80,7 +81,6 @@ if (form) {
 
         const whatsappURL = `https://wa.me/${doctorWhatsAppNumber}?text=${encodeURIComponent(message)}`;
 
-        // Show clean digital slip modal first / or direct open whatsapp
         const modalTokenText = document.getElementById('modalTokenText');
         const modalDetailsText = document.getElementById('modalDetailsText');
 
@@ -100,8 +100,10 @@ if (form) {
             dateInput.setAttribute('min', new Date().toISOString().split('T')[0]);
         }
 
-        // Direct WhatsApp launch
-        window.open(whatsappURL, '_blank');
+        // Direct WhatsApp redirection / launch after short delay so modal renders clean slip
+        setTimeout(() => {
+            window.location.href = whatsappURL;
+        }, 1000);
     });
 }
 

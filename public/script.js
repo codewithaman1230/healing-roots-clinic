@@ -50,9 +50,9 @@ if (form) {
         const selects = form.querySelectorAll('select');
         const service = selects[0].value;
         const date = dateInput ? dateInput.value : '';
-        const timeSlot = selects.value;
+        const timeSlot = selects ? selects.value : '';
 
-        if (!fullName || !phone || !service || !date || !timeSlot) {
+        if (!fullName || !phone || !service || !date) {
             alert('Please fill in all required appointment details.');
             return;
         }
@@ -74,7 +74,7 @@ if (form) {
         localStorage.setItem('healingRootsDB', JSON.stringify(patientDatabase));
 
         const doctorWhatsAppNumber = "918982160554"; 
-        const message = `Hello Dr. Radhika,\n\nI want to book an appointment at Healing Roots Clinic.\n\n🎟️ *Appointment No: ${tokenNumber}*\n\n*Patient Details:*\n👤 Name: ${fullName}\n📧 Email: ${email}\n📞 Phone: ${phone}\n🩺 Service: ${service}\n📅 Date: ${date}\n⏰ Time: ${timeSlot}`;
+        const message = `Hello Dr. Radhika,\n\nI want to book an appointment at Healing Roots Clinic.\n\n🎟️ Appointment No: ${tokenNumber}\n\nPatient Details:\n👤 Name: ${fullName}\n📧 Email: ${email}\n📞 Phone: ${phone}\n🩺 Service: ${service}\n📅 Date: ${date}\n⏰ Time: ${timeSlot}`;
 
         const whatsappURL = `https://wa.me/${doctorWhatsAppNumber}?text=${encodeURIComponent(message)}`;
 
@@ -88,18 +88,14 @@ if (form) {
                 <p><b>Service:</b> ${service}</p>
                 <p><b>Date:</b> ${date}</p>
                 <p><b>Time:</b> ${timeSlot}</p>
-                <div style="margin-top: 15px;">
-                    <a href="${whatsappURL}" target="_blank" style="display: block; background: #25D366; color: white; text-align: center; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.9rem;">
-                        <i class="fa-brands fa-whatsapp"></i> Open WhatsApp to Send Message
+                <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
+                    <a href="${whatsappURL}" target="_blank" rel="noopener noreferrer" style="display: block; background: #25D366; color: white; text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.95rem;">
+                        <i class="fa-brands fa-whatsapp"></i> Click to Send WhatsApp Message
                     </a>
                 </div>
             `;
         }
         if (modal) modal.style.display = 'flex';
-
-        setTimeout(() => {
-            window.open(whatsappURL, '_blank');
-        }, 800);
 
         form.reset();
         if (dateInput) {

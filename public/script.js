@@ -45,11 +45,11 @@ if (form) {
 
         const inputs = form.querySelectorAll('input, select');
         const fullName = inputs[0].value.trim();
-        const email = inputs[1].value.trim();
-        const phone = inputs[2].value.trim();
-        const service = inputs[3].value;
-        const date = inputs[4].value;
-        const timeSlot = inputs[5].value;
+        const email = inputs.value.trim();
+        const phone = inputs.value.trim();
+        const service = inputs.value;
+        const date = inputs.value;
+        const timeSlot = inputs.value;
 
         let appointmentCounter = localStorage.getItem('healingRootsToken') || 101;
         appointmentCounter = parseInt(appointmentCounter) + 1;
@@ -162,6 +162,9 @@ function applyDoctorAuthUI() {
         if (adminStatusText) adminStatusText.innerHTML = '<i class="fa-solid fa-lock"></i> Doctor Portal Locked';
         if (adminAuthBtn) adminAuthBtn.innerText = 'Doctor Login';
     }
+    document.querySelectorAll('.delete-video-btn').forEach(btn => {
+        btn.style.display = isDoctorLoggedIn ? 'inline-flex' : 'none';
+    });
 }
 
 // 💬 Written Review Submission & Display Logic
@@ -211,10 +214,10 @@ if (writtenReviewForm) {
     });
 }
 
-// 🎥 Video Gallery & Management Logic
+// 🎥 Video Gallery & Management Logic (Backend Integrated)
 const videoGridContainer = document.getElementById('videoGridContainer');
 
-function appendVideoToGrid(name, desc, videoSrc, type = 'patient') {
+function appendVideoToGrid(name, desc, videoSrc, type = 'patient', videoId = null) {
     if (!videoGridContainer) return;
 
     const deleteBtnDisplay = isDoctorLoggedIn ? 'inline-flex' : 'none';
@@ -231,16 +234,29 @@ function appendVideoToGrid(name, desc, videoSrc, type = 'patient') {
         <div class="video-info">
             <h4>${name}</h4>
             <p><i class="fa-solid fa-video" style="color: var(--primary-pink); margin-right: 6px;"></i> ${desc}</p>
-            <button class="delete-video-btn" style="display: ${deleteBtnDisplay};" onclick="deleteVideo('${type}', '${videoSrc}')">
-                <i class="fa-solid fa-trash"></i> Delete Video
-            </button>
+            ${videoId ? `<button class="delete-video-btn" style="display: ${deleteBtnDisplay};" onclick="deleteVideo('${videoId}')"><i class="fa-solid fa-trash"></i> Delete Video</button>` : ''}
         </div>
     `;
-    videoGridContainer.prepend(newCard);
+    videoGridContainer.appendChild(newCard);
 }
 
-// 🗑️ Delete Video Function (Doctor Only)
-function deleteVideo(type, videoUrl) {
+async function loadVideosFromBackend() {
+    if (!videoGridContainer) return;
+    try {
+        const res = await fetch('/api/videos');
+        if (res.ok) {
+            const videos = await res.json();
+            videoGridContainer.innerHTML = '';
+            videos.forEach(vid => {
+                appendVideoToGrid(vid.title, vid.description || '', vid.videoUrl, vid.category, vid._id);
+            });
+        }
+    } catch (err) {
+        console.error('Video fetch error:', err);
+    }
+}
+
+async function deleteVideo(videoId) {
     if (!isDoctorLoggedIn) {
         alert("Unauthorized! Only Dr. Radhika can delete videos.");
         return;
@@ -248,48 +264,35 @@ function deleteVideo(type, videoUrl) {
 
     if (!confirm("Kya aap waqai is video ko delete karna chahte hain?")) return;
 
-    if (type === 'doctor') {
-        let savedDocVideos = JSON.parse(localStorage.getItem('healingRootsDocVideos')) || [];
-        savedDocVideos = savedDocVideos.filter(item => item.url !== videoUrl);
-        localStorage.setItem('healingRootsDocVideos', JSON.stringify(savedDocVideos));
-    } else {
-        let savedPatientVideos = JSON.parse(localStorage.getItem('healingRootsPatientVideos')) || [];
-        savedPatientVideos = savedPatientVideos.filter(item => item.url !== videoUrl);
-        localStorage.setItem('healingRootsPatientVideos', JSON.stringify(savedPatientVideos));
+    try {
+        const res = await fetch(`/api/videos/${videoId}`, { method: 'DELETE' });
+        if (res.ok) {
+            alert('Video delete ho gayi!');
+            loadVideosFromBackend();
+        } else {
+            alert('Delete karne me samasya aayi.');
+        }
+    } catch (err) {
+        console.error('Delete error:', err);
     }
-
-    location.reload();
 }
 
-// Load Saved Data on Page Load
 window.addEventListener('DOMContentLoaded', () => {
     applyDoctorAuthUI();
 
-    // Load Written Reviews
     let savedReviews = JSON.parse(localStorage.getItem('healingRootsWrittenReviews')) || [];
     savedReviews.forEach(item => {
         appendWrittenReview(item.name, item.rating, item.text);
     });
 
-    // Load Doctor Videos
-    let savedDocVideos = JSON.parse(localStorage.getItem('healingRootsDocVideos')) || [];
-    savedDocVideos.forEach(item => {
-        appendVideoToGrid(item.name, item.desc, item.url, 'doctor');
-    });
-
-    // Load Patient Videos Uploaded by Doctor
-    let savedPatientVideos = JSON.parse(localStorage.getItem('healingRootsPatientVideos')) || [];
-    savedPatientVideos.forEach(item => {
-        appendVideoToGrid(item.name, item.desc, item.url, 'patient');
-    });
+    loadVideosFromBackend();
 });
 
-// Doctor Upload Form Logic
 const doctorVideoForm = document.getElementById('doctorVideoForm');
 const docUploadFeedback = document.getElementById('docUploadFeedback');
 
 if (doctorVideoForm) {
-    doctorVideoForm.addEventListener('submit', function(e) {
+    doctorVideoForm.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         if (!isDoctorLoggedIn) {
@@ -300,30 +303,41 @@ if (doctorVideoForm) {
         const category = document.getElementById('docUploadCategory').value;
         const name = document.getElementById('docUploaderName').value.trim();
         const desc = document.getElementById('docUploaderDesc').value.trim();
-        const file = document.getElementById('docUploaderFile').files[0];
+        const fileInput = document.getElementById('docUploaderFile');
+        const file = fileInput.files[0];
 
         if (!file) return;
 
         docUploadFeedback.style.color = '#B45309';
-        docUploadFeedback.innerText = "Uploading video, please wait...";
+        docUploadFeedback.innerText = "Uploading video to Cloudinary/Database, please wait...";
 
-        const videoObjectURL = URL.createObjectURL(file);
+        const formData = new FormData();
+        formData.append('video', file);
+        formData.append('title', name);
+        formData.append('description', desc);
+        formData.append('category', category);
 
-        if (category === 'doctor') {
-            let savedDocVideos = JSON.parse(localStorage.getItem('healingRootsDocVideos')) || [];
-            savedDocVideos.push({ name, desc, url: videoObjectURL });
-            localStorage.setItem('healingRootsDocVideos', JSON.stringify(savedDocVideos));
-        } else {
-            let savedPatientVideos = JSON.parse(localStorage.getItem('healingRootsPatientVideos')) || [];
-            savedPatientVideos.push({ name, desc, url: videoObjectURL });
-            localStorage.setItem('healingRootsPatientVideos', JSON.stringify(savedPatientVideos));
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                docUploadFeedback.style.color = '#0E5C36';
+                docUploadFeedback.innerText = "✨ Success! Video has been published to the gallery.";
+                doctorVideoForm.reset();
+                loadVideosFromBackend();
+            } else {
+                docUploadFeedback.style.color = '#DC2626';
+                docUploadFeedback.innerText = "Error: " + (data.error || 'Upload failed');
+            }
+        } catch (err) {
+            docUploadFeedback.style.color = '#DC2626';
+            docUploadFeedback.innerText = "Network Error during upload.";
+            console.error(err);
         }
-
-        appendVideoToGrid(name, desc, videoObjectURL, category);
-
-        docUploadFeedback.style.color = '#0E5C36';
-        docUploadFeedback.innerText = "✨ Success! Video has been published to the gallery.";
-        doctorVideoForm.reset();
 
         setTimeout(() => { docUploadFeedback.innerText = ""; }, 5000);
     });

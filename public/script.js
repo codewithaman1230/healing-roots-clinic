@@ -43,18 +43,15 @@ if (form) {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        // Safe targeting of inputs/selects inside the form
-        const fullNameInput = form.querySelector('input[type="text"]');
-        const emailInput = form.querySelector('input[type="email"]');
-        const phoneInput = form.querySelector('input[type="tel"]');
-        
-        const fullName = fullNameInput ? fullNameInput.value.trim() : '';
-        const email = emailInput ? emailInput.value.trim() : '';
-        const phone = phoneInput ? phoneInput.value.trim() : '';
+        // Exact input selectors
+        const textInputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]');
+        const fullName = textInputs[0] ? textInputs[0].value.trim() : '';
+        const email = textInputs ? textInputs.value.trim() : '';
+        const phone = textInputs ? textInputs.value.trim() : '';
         
         const selects = form.querySelectorAll('select');
         const service = selects[0] ? selects[0].value : '';
-        const timeSlot = selects ? selects.value : (selects[0] && selects.length > 1 ? selects.value : '');
+        const timeSlot = selects ? selects.value : '';
         const date = dateInput ? dateInput.value : '';
 
         if (!fullName || !phone || !service || !date || !timeSlot) {
@@ -83,9 +80,7 @@ if (form) {
 
         const whatsappURL = `https://wa.me/${doctorWhatsAppNumber}?text=${encodeURIComponent(message)}`;
 
-        // Direct WhatsApp trigger on submit
-        window.open(whatsappURL, '_blank');
-
+        // Show clean digital slip modal first / or direct open whatsapp
         const modalTokenText = document.getElementById('modalTokenText');
         const modalDetailsText = document.getElementById('modalDetailsText');
 
@@ -104,6 +99,9 @@ if (form) {
         if (dateInput) {
             dateInput.setAttribute('min', new Date().toISOString().split('T')[0]);
         }
+
+        // Direct WhatsApp launch
+        window.open(whatsappURL, '_blank');
     });
 }
 
